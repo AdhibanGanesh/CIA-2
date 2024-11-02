@@ -9,6 +9,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    sh 'docker stop $(docker ps -q --filter "ancestor=app") || true'
                     sh 'docker build -t app .'
                 }
             }
