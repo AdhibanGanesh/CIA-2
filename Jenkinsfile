@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        AWS_CREDENTIALS = credentials('aws-access-key') 
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key').USR // Use your Jenkins credential ID here
+        AWS_SECRET_ACCESS_KEY = credentials('aws-access-key').PSW
         AWS_REGION = 'ap-south-1'  
         ECR_REPO_URI = '905418202348.dkr.ecr.ap-south-1.amazonaws.com/app'  
     }
@@ -26,9 +27,6 @@ pipeline {
                 script {
                     // Logs in to ECR, storing the login command and running it
                     sh '''
-                    aws configure set aws_access_key_id $AWS_CREDENTIALS_USR
-                    aws configure set aws_secret_access_key $AWS_CREDENTIALS_PSW
-                    aws configure set region $AWS_REGION
                     $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI)
                     '''
                 }
