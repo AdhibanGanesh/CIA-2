@@ -14,10 +14,43 @@ pipeline {
                 }
             }
         }
-        stage('Run Docker Container') {
+        stage('Authenticate with AWS ECR') {
             steps {
                 script {
-                    sh 'docker run -d -p 8082:80 app'
+                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh '''
+                        $(aws ecr get-login --no-include-email --region ap-south-1)
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Tag Docker Image for ECR') {
+            steps {
+                script {
+                    sh '''
+                    docker tag app:latest 905418202348.dkr.ecr.ap-south-1.amazonaws.com/app:latest
+                    '''
+                }
+            }
+        }
+        stage('Push Docker Image to ECR') {
+            steps {
+                script {
+                    sh '''
+                    docker push 905418202348.dkr.ecr.ap-south-1.amazonaws.com/app:latest
+                    '''
+                }
+            }
+        }
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh '''
+                        ssh -i /Users/adhibangn/Downloads/app-key.pem ec2-user@65.1.107.79 "docker run -d -p 80:80 905418202348.dkr.ecr.ap-south-1.amazonaws.com/app:latest"
+                        '''
+                    }
                 }
             }
         }
