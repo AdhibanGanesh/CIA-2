@@ -1,7 +1,7 @@
 pipeline {
     agent any
      environment {
-        AWS_CREDENTIALS = credentials('aws-credentials') 
+        AWS_CREDENTIALS = credentials('aws-access-key') 
         AWS_REGION = 'ap-south-1'  
         ECR_REPO_URI = '905418202348.dkr.ecr.ap-south-1.amazonaws.com/app'
     }
