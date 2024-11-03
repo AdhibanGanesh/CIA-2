@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        AWS_CREDENTIALS = credentials('aws-access-key') 
         AWS_REGION = 'ap-south-1'  
         ECR_REPO_URI = '905418202348.dkr.ecr.ap-south-1.amazonaws.com/app'  
     }
@@ -26,8 +25,8 @@ pipeline {
                 script {
                     // Logs in to ECR, storing the login command and running it
                     sh '''
-                    aws configure set aws_access_key_id $AWS_CREDENTIALS_USR
-                    aws configure set aws_secret_access_key $AWS_CREDENTIALS_PSW
+                    aws configure set aws_access_key_id AKIA5FTZBLTWLOKPZ6WW
+                    aws configure set aws_secret_access_key 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
                     aws configure set region $AWS_REGION
                     $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI)
                     '''
@@ -48,7 +47,7 @@ pipeline {
         stage('Deploy to EC2 or Elastic Beanstalk') {
             steps {
                 script {
-                    withEnv(["AWS_ACCESS_KEY_ID=${AWS_CREDENTIALS_USR}", "AWS_SECRET_ACCESS_KEY=${AWS_CREDENTIALS_PSW}"]) {
+                    withEnv(["AWS_ACCESS_KEY_ID=AKIA5FTZBLTWLOKPZ6WW", "AWS_SECRET_ACCESS_KEY=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"]) {
                         // Prints AWS credentials for debugging purposes
                         sh 'echo $AWS_ACCESS_KEY_ID'
                         sh 'echo $AWS_SECRET_ACCESS_KEY'
