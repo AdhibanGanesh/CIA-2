@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        AWS_REGION = 'ap-south-1'
-        ECR_REPO_URI = '905418202348.dkr.ecr.ap-south-1.amazonaws.com/app'
-    }
     stages {
         stage('Clone Repository') {
             steps {
@@ -18,5 +14,12 @@ pipeline {
                 }
             }
         }
-        stage('Authenticate with ECR') {
-            ste
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh 'docker run -d -p 8082:80 app'
+                }
+            }
+        }
+    }
+}
